@@ -51,7 +51,7 @@ module.exports = {
     })
   }
 , update: function(req, res){
-    User.findByIdAndUpdate(req.params.user_id, {$push : {subs: req.body.subs}}, {new: true}, function(err, updatedUser){
+    User.findByIdAndUpdate(req.params.user_id, {$pushAll : {subs: req.body.newSubs}}, {new: true}, function(err, updatedUser){
       if (err) {
         return res.status(500).end(err);
       }

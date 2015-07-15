@@ -11,7 +11,7 @@ angular.module('recur', ['ngRoute'])
       isAuthed: function(){
 
       }
-    , mySubs: function(mainService){
+    , currUser: function(mainService){
         return mainService.getUser();
       }
     , getSubs: function(mainService){

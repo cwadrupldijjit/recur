@@ -8,7 +8,7 @@
   <div ng-repeat="sub in mySubs">{{sub.name}} {{sub.cost}}</div>
 </div>
 <div class="row">
-  <div ng-repeat="sub in subs" ng-style="{background: sub.color, color: '#ffffff'}" ng-click="subsUpdate(sub._id)">{{sub.name}} {{sub.cost}}</div>
+  <div ng-repeat="sub in subs" ng-style="{background: sub.color, color: '#ffffff'}" ng-click="updateSubs(sub.name)">{{sub.name}} {{sub.cost}}</div>
 </div>
 <div class="save">
 </div>

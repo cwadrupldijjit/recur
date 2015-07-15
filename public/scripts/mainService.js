@@ -30,12 +30,12 @@ angular.module('recur')
       return def.promise;
     }
 
-  , updateUser: function(mySubs){
+  , updateUser: function(newSubs, uid){
       var def = $q.defer();
       $http({
         method: 'PUT'
-      , url: 'http://localhost:8080/api/user/' + login.id
-      , data: {login: login}
+      , url: 'http://localhost:8080/api/user/' + uid
+      , data: {newSubs: newSubs}
       })
       .then(function(res){
         def.resolve(res.data);
