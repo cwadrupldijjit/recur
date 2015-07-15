@@ -1,3 +1,32 @@
-<html>
-<h1>RECUR RECUR RECUR</h1>
+<!DOCTYPE html>
+<html lang="en" ng-app="recur">
+<head>
+  <title>Recur | Remember what you're spending money on every month? Didn't think so</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/3.0.3/normalize.min.css" >
+  <link rel="stylesheet" href="styles/style.css" >
+</head>
+<body ng-controller="mainCtrl">
+  <div ng-show="modalShow" id="shade"></div>
+  <div id="nav" class="row">
+    <a ng-href="/#/"><h1>RECUR</h1></a>
+    <a ng-click="modalShow=true" ng-show="!user"><h2>Sign Up / Log In</h2></a>
+    <a ng-href="/#/mySubs" ng-show="user"><h2>My Subscriptions</h2></a>
+    <a  href="/auth/logout" ng-show="user">Log Out</a>
+  </div>
+  <div id="main">
+    <div ng-view></div>
+<!--     <my-subs ng-show="subsShow" user="{{user}}"></my-subs> -->
+    <auth-modal ng-show="modalShow"></auth-modal>
+  </div>
+
+  <!-- Angular Dependencies -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.1/angular.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.1/angular-route.js"></script>
+
+  <!-- Angular app files -->
+  <script src="scripts/app.js"></script>
+  <script src="scripts/mainCtrl.js"></script>
+  <script src="scripts/mainService.js"></script>
+  <script src="scripts/mySubsCtrl.js"></script>
+</body>
 </html>

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<br>
+<br>
+<br>
+<br>
+<br>
+<div class="row">
+  <div ng-repeat="sub in mySubs">{{sub.name}} {{sub.cost}}</div>
+</div>
+<div class="row">
+  <div ng-repeat="sub in subs" ng-style="{background: sub.color, color: '#ffffff'}" ng-click="subsUpdate(sub._id)">{{sub.name}} {{sub.cost}}</div>
+</div>
+<div class="save">
+</div>
+{{user}}
+<br>
+<br>
+<div>
+  <div>
+    <label for="new-sub-name">Name:</label>
+    <input id="new-sub-name" type="text" name="name" ng-model="newSub.name">
+  </div>
+  <div>
+    <label for="new-sub-cost">Cost:</label>
+    <input id="new-sub-cost" type="text" name="name" ng-model="newSub.cost">
+  </div>
+  <div>
+    <label for="new-sub-url">Url:</label>
+    <input id="new-sub-url" type="text" name="name" ng-model="newSub.url">
+  </div>
+  <div>
+    <label for="new-sub-color">Color:</label>
+    <input id="new-sub-color" type="text" name="name" ng-model="newSub.color">
+  </div>
+  <input type="button" value="Add" ng-click="addSub(newSub)">
+</div>
