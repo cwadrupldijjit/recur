@@ -1,4 +1,4 @@
-<div id="modal">
+<div>
 <!--   Sign Up
   <form>
     <input placeholder="email address...">
@@ -10,14 +10,10 @@
     <input placeholder="email address...">
     <input placeholder="password...">
   </form> -->
-  Log In with...
-<!--   <button>Google</button>
-  <button>Facebook</button>
-  <button>Twitter</button> -->
 
-  <a href="/auth/google">Google</a>
-  <a href="/auth/facebook">Facebook</a>
-  <a href="/auth/twitter">Twitter</a>
+  <a href="/auth/google"><i class="fa fa-google-plus-square fa-2x inline google"></i></a>
+  <a href="/auth/facebook"><i class="fa fa-facebook-square fa-2x inline facebook"></i></a>
+  <a href="/auth/twitter"><i class="fa fa-twitter-square fa-2x inline twitter"></i></a>
 
-  <button ng-click="modalShow=false">Cancel</button>
+  <button ng-click="authModalOpen=false; authModalClose=true">Cancel</button>
 </div>

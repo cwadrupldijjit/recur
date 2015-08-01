@@ -9,13 +9,13 @@ module.exports = {
     var update = {};
     if (profile.email || profile._json.email) { query.push( { 'email': profile.email || profile._json.email } );
                                                 update.email = profile.email || profile._json.email; }
-    if (profile.provider === 'google')        { query.push({'googleId': profile.id}); 
+    if (profile.provider === 'google')        { query.push({'googleId': profile.id});
                                                 update.googleId = profile.id; }
     if (profile.provider === 'facebook')      { query.push({'facebookId': profile.id});
                                                 update.facebookId = profile.id; }
     if (profile.provider === 'twitter')       { query.push({'twitterId': profile.id});
                                                 update.twitterId = profile.id; }
-      
+
 // console.log('query: ', query);
 // console.log('update: ', update);
     User.findOneAndUpdate({ $or: query }, update, {new: true}, function(updateErr, user){
@@ -36,8 +36,7 @@ module.exports = {
     return def.promise;
   }
 , retrieve: function(req, res){
-//     if (!req.user) return res.status(500).end('no authenticated user');
-//     console.log('---- USERCTRL LINE 53 ---- ', req.user);
+    if (!req.user) return res.status(500).send('no authenticated user');
     var query = {};
     if (req.user && req.user.googleId) query.googleId = req.user.googleId;
     if (req.user && req.user.facebookId) query.facebookId = req.user.facebookId;
@@ -45,43 +44,31 @@ module.exports = {
     User.findOne(query)
     .exec().then(function(user){
       if (!user) {
-        return res.status(500).end('user not found');
+        return res.status(500).send('user not found');
       }
       return res.status(200).json(user);
     })
   }
 , update: function(req, res){
-    User.findByIdAndUpdate(req.params.user_id, {$pushAll : {subs: req.body.newSubs}}, {new: true}, function(err, updatedUser){
+    User.findByIdAndUpdate(req.params.user_id, {subs: req.body.newMySubs}, {new: true}, function(err, updatedUser){
       if (err) {
-        return res.status(500).end(err);
+        return res.status(500).json(err);
       }
       return res.status(200).json(updatedUser);
     })
   }
 , remove: function(req, res){
     User.findByIdAndRemove(req.params.user_id, function(err){
-      if (err) return res.status(500).end(err);
-      return res.status(200).end();
+      if (err) return res.status(500).json(err);
+      return res.status(200).json();
     })
   }
-, 
+, mail: function(){
+    var def = Q.defer();
+    User.findOne({})
+    .exec().then(function(user){
+      def.resolve(user);
+    });
+    return def.promise;
+  }
 };
-
-
-
-
-// , create: function(req, res){
-//     User.create({
-//       googleId: req.body.googleId
-//     , facebookId: req.body.facebookId
-//     , twitterId: req.body.twitterId
-//     , email: req.body.email
-//     , subs: req.body.subs
-//     , date: Date.now
-//     }, function(err, newUser){
-//       if (err) {
-//         return res.status(500).end(err);
-//       }
-//       return res.status(200).json(newUser);
-//     })
-//   }

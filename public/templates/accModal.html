@@ -1,0 +1,5 @@
+<div class="modal animated" ng-class="{slideInRight: accModalShow, slideOutRight: !accModalShow}">
+  <a ng-href="/#/mySubs" ng-click="hideModal()" ng-show="user">My Subscriptions</a>
+  <a ng-href="/auth/logout" ng-show="user"><i class="fa fa-sign-out fa-2x inline"></i></a>
+  <button ng-click="accModalShow=false">Cancel</button>
+</div>

@@ -1,32 +1,69 @@
 <!DOCTYPE html>
 <html lang="en" ng-app="recur">
+
 <head>
   <title>Recur | Remember what you're spending money on every month? Didn't think so</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/3.0.3/normalize.min.css" >
+
   <link rel="stylesheet" href="styles/style.css" >
+  <link rel="stylesheet" href="styles/animate.min.css">
+  <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+  <link href='http://fonts.googleapis.com/css?family=Open+Sans:700,400' rel='stylesheet' type='text/css'>
+  <link href='http://fonts.googleapis.com/css?family=Lora:400,700' rel='stylesheet' type='text/css'>
 </head>
-<body ng-controller="mainCtrl">
-  <div ng-show="modalShow" id="shade"></div>
-  <div id="nav" class="row">
-    <a ng-href="/#/"><h1>RECUR</h1></a>
-    <a ng-click="modalShow=true" ng-show="!user"><h2>Sign Up / Log In</h2></a>
-    <a ng-href="/#/mySubs" ng-show="user"><h2>My Subscriptions</h2></a>
-    <a  href="/auth/logout" ng-show="user">Log Out</a>
+
+<body ng-controller="mainBodyCtrl" ng-class="{vignette: getLoc()==='/'}">
+  
+  <div id="nav" ng-class="{'nav-change': getLoc()!='/'}">
+    <div id="logo">
+      <a ng-href="/#/" ng-class="{white-text: getLoc()==='/'}" ng-style="whiteText" ng-click="whiteText={'color': '#ffffff'}">RECUR</a>
+      <span id="logo2" ng-show="getLoc()==='/'">RECUR</span>
+      <span id="logo3" ng-show="getLoc()==='/'">RECUR</span>
+    </div>
+    <div id="menu">
+      <a ng-click="authModalOpen=true" ng-show="!user">
+        <div ng-show="loginTip" class="animated" ng-class="{fadeIn: loginTip, fadeOut: !loginTip}" style="color: #ffffff; font-size: 20pt">LOG IN &nbsp;&nbsp;&nbsp;</div>
+        <i ng-class="{'white-text': getLoc()==='/'}" class="fa fa-sign-in animated pulse" ng-mouseenter="loginTip=true" ng-mouseleave="loginTip=false"></i>
+      </a>
+      <a ng-click="accModalOpen=true" ng-show="user">
+        <i ng-class="{'white-text': getLoc()==='/'}" class="fa fa-cog animated pulse"></i>
+      </a>
+    </div>
   </div>
-  <div id="main">
-    <div ng-view></div>
-<!--     <my-subs ng-show="subsShow" user="{{user}}"></my-subs> -->
-    <auth-modal ng-show="modalShow"></auth-modal>
+
+  <div ng-show="authModalOpen" ng-click="authModalOpen=false" class="modal-shade"></div>
+  <div id="auth-modal" class="modal animated" ng-show="authModalOpen" ng-class="{slideInRight: authModalOpen, slideOutRight: !authModalOpen}">
+    <i ng-click="authModalOpen=false" class="fa fa-times"></i>
+    <div id="auth-icons">
+      <a href="/auth/google"><i class="fa fa-google-plus-square"></i></a>
+      <a href="/auth/facebook"><i class="fa fa-facebook-square"></i></a>
+      <a href="/auth/twitter"><i class="fa fa-twitter-square"></i></a>
+    </div>
   </div>
+
+  <div ng-show="accModalOpen" ng-click="accModalOpen=false" class="modal-shade"></div>
+  <div id="acc-modal" class="modal animated" ng-show="accModalOpen" ng-class="{slideInRight: accModalOpen, slideOutRight: !accModalOpen}">
+    <i ng-click="accModalOpen=false" class="fa fa-times"></i>
+    <div id="menu-items">
+      <a ng-href="/#/mySubs" ng-click="accModalOpen=false; whiteText={}" ng-show="user">
+        <i class="fa fa-list"></i><span>&nbsp;&nbsp;&nbsp; MANAGE</span>
+      </a>
+      <a ng-href="/auth/logout" ng-show="user">
+        <i class="fa fa-sign-out"></i><span>&nbsp;&nbsp;&nbsp; LOGOUT</span>
+      </a>
+    </div>
+  </div>
+
+  <div ng-view id="view"></div>
 
   <!-- Angular Dependencies -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.1/angular.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.1/angular-route.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.2/angular-animate.js"></script>
 
   <!-- Angular app files -->
   <script src="scripts/app.js"></script>
-  <script src="scripts/mainCtrl.js"></script>
   <script src="scripts/mainService.js"></script>
   <script src="scripts/mySubsCtrl.js"></script>
+
 </body>
 </html>

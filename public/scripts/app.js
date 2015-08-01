@@ -1,21 +1,30 @@
-angular.module('recur', ['ngRoute'])
+angular.module('recur', ['ngRoute', 'ngAnimate'])
 .config(function($routeProvider){
+ 
   $routeProvider
   .when('/', {
     templateUrl: './templates/land.html'
+  , resolve: {
+      currUser: function(mainService){
+        mainService.getUser();
+      }
+    , subsList: function(mainService){
+        mainService.getSubs();
+      }
+    }
   })
   .when('/mySubs', {
     templateUrl: './templates/mySubs.html'
   , controller: 'mySubsCtrl'
   , resolve: {
-      isAuthed: function(){
-
-      }
-    , currUser: function(mainService){
+      currUser: function(mainService){
         return mainService.getUser();
       }
-    , getSubs: function(mainService){
+    , subsList: function(mainService){
         return mainService.getSubs();
+      }
+    , routeAuth: function(mainService, $location){
+        if (!mainService.isLoggedIn()) $location.path('/'); 
       }
     }
   })
@@ -23,31 +32,15 @@ angular.module('recur', ['ngRoute'])
     redirectTo: '/'
   })
 })
-// .directive('mySubs', function(){
-//   return {
-// //     scope: {
-// //       user: '=',
-// //       setUser: '&'
-// //     },
-//     templateUrl: './templates/mySubs.html',
-//     controller: 'mySubsCtrl',
-//     link: function (scope, elem, attrs) {
-// //       console.log(scope.user);
-//       elem.on('click', function(){
-// //         scope.resetWeather();
-// //         scope.setUser({user: scope.user});
-// //         scope.showToggle = !scope.showToggle;
-// //         scope.$apply();
-//       });
-//     }
-//   }
-// })
-.directive('authModal', function(){
-  return {
-//     scope: {
-//     },
-    templateUrl: './templates/authModal.html',
-    link: function (scope, elem, attrs) {
-    }
-  }
+
+.controller('mainBodyCtrl', function($scope, $location, mainService){
+
+  $scope.whiteText = {'color': '#ffffff'};
+
+  $scope.getLoc = function(){return $location.path()};
+
+  $scope.$watch( mainService.isLoggedIn, function ( newVal, oldVal ) {
+    $scope.user = mainService.currentUser();
+//     $scope.subs = mainService.subsList();
+  });
 })

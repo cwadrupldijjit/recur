@@ -15,6 +15,7 @@
   "license": "ISC",
   "dependencies": {
     "body-parser": "^1.13.1",
+    "cors": "^2.7.1",
     "cron": "^1.0.9",
     "express": "^4.13.0",
     "express-session": "^1.11.3",

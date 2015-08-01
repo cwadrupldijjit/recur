@@ -1,36 +1,38 @@
 <!DOCTYPE html>
-<br>
-<br>
-<br>
-<br>
-<br>
-<div class="row">
-  <div ng-repeat="sub in mySubs">{{sub.name}} {{sub.cost}}</div>
-</div>
-<div class="row">
-  <div ng-repeat="sub in subs" ng-style="{background: sub.color, color: '#ffffff'}" ng-click="updateSubs(sub.name)">{{sub.name}} {{sub.cost}}</div>
-</div>
-<div class="save">
-</div>
-{{user}}
-<br>
-<br>
-<div>
-  <div>
-    <label for="new-sub-name">Name:</label>
-    <input id="new-sub-name" type="text" name="name" ng-model="newSub.name">
+<!-- <div id="main" class="shadow"> -->
+<div id="main">
+
+  <div id="my-subs">
+    <div id="email">{{email}}</div>
+    <div ng-repeat="sub in mySubs" class="subs" ng-mouseenter="iconsShow=true" ng-mouseleave="iconsShow=flase">
+      <div class="sub name" ng-style="{'border': '2px solid ' + sub.color}">{{sub.name}}</div>
+      <div class="sub cost" ng-style="{'border': '2px solid ' + sub.color}">${{sub.cost}}</div>
+      <div class="sub-icons"><i class="fa fa-chevron-up" ng-show="iconsShow" ng-click="sub.cost=sub.cost+1; mySubsChanged=true"></i></div>
+      <div class="sub-icons"><i class="fa fa-chevron-down" ng-show="iconsShow" ng-click="sub.cost=sub.cost-1; mySubsChanged=true"></i></div>
+      <div class="sub-icons"><i class="fa fa-times" ng-show="iconsShow" ng-click="mySubRemove=true; sendToSubs(sub.name)"></i></div>
+    </div>
+    <button class="button" ng-click="updateMySubs(mySubs)" ng-show="mySubsChanged" style="margin: 30px 70px">Save</button>
   </div>
-  <div>
-    <label for="new-sub-cost">Cost:</label>
-    <input id="new-sub-cost" type="text" name="name" ng-model="newSub.cost">
+
+  <div id="subs-wrapper">
+  <div id="subs">
+    <div ng-repeat="sub in subs" class="subs" ng-mouseenter="iconsShow=true" ng-mouseleave="iconsShow=flase">
+      <div class="sub-icons"><i class="fa fa-plus" ng-show="iconsShow" ng-click="subRemove=true; sendToMySubs(sub.name)"></i></div>
+      <div class="sub name" ng-style="{'border': '2px solid ' + sub.color}">{{sub.name}}</div>
+<!--       <div class="sub cost" ng-style="{'border': '2px solid ' + sub.color}">${{sub.cost}}</div> -->
+    </div>
+    <form ng-submit="addSub(newSub)">
+      <div>
+<!--         <label for="new-sub-name">Name:&nbsp;&nbsp;</label> -->
+        <input id="new-sub-name" type="text" name="name" ng-model="newSub.name" placeholder="sub name...">
+      </div>
+      <div>
+<!--         <label for="new-sub-cost">Cost:&nbsp;&nbsp;&nbsp;</label> -->
+        <input id="new-sub-cost" type="text" name="name" ng-model="newSub.cost" placeholder="monthly cost...">
+      </div>
+      <input type="submit" value="Add" class="button">
+    </form>
   </div>
-  <div>
-    <label for="new-sub-url">Url:</label>
-    <input id="new-sub-url" type="text" name="name" ng-model="newSub.url">
   </div>
-  <div>
-    <label for="new-sub-color">Color:</label>
-    <input id="new-sub-color" type="text" name="name" ng-model="newSub.color">
-  </div>
-  <input type="button" value="Add" ng-click="addSub(newSub)">
+
 </div>
