@@ -18,5 +18,5 @@ We're all wasting money right now on recurring monthly subscription services we'
 ![login using Google or Facebook](./public/img/5.gif)
 
 ####Upcoming features
-[] customize reminder emails for charge date of each service
+- [ ] customize reminder emails for charge date of each service
 
