@@ -1,35 +1,32 @@
+(function(){
 'use strict';
-var port = process.argv[2] || 8080
-  , express     = require( 'express' )
-  , app         = express()
-  , mongoose    = require( 'mongoose' )
-  , bodyParser  = require( 'body-parser' ).json()
-  , cors        = require( 'cors' )
+var port = process.argv[2] || 8080,
+    express     = require( 'express' ),
+    app         = express(),
+    mongoose    = require( 'mongoose' ),
+    bodyParser  = require( 'body-parser' ),
+    cors        = require( 'cors' ),
 
-  , userCtrl    = require( './api/ctrls/userCtrl.js' )
-  , subCtrl     = require( './api/ctrls/subCtrl.js' )
+    userCtrl    = require( './api/ctrls/userCtrl.js' ),
+    subCtrl     = require( './api/ctrls/subCtrl.js' ),
 
-  , config      = require( './api/config.js' )
-  , session     = require( 'express-session' )
-  , passport    = require( 'passport' )
-  , GoogleStrategy    = require( 'passport-google-oauth2' ).Strategy
-  , FacebookStrategy  = require( 'passport-facebook' ).Strategy
-  , TwitterStrategy   = require( 'passport-twitter' ).Strategy
+    config      = require( './api/config.js' ),
+    session     = require( 'express-session' ),
+    passport    = require( 'passport' ),
+    GoogleStrategy    = require( 'passport-google-oauth2' ).Strategy,
+    FacebookStrategy  = require( 'passport-facebook' ).Strategy,
+    // TwitterStrategy   = require( 'passport-twitter' ).Strategy
 
-  , nodemailer  = require('nodemailer')
-  , CronJob     = require('cron').CronJob
+    nodemailer  = require('nodemailer'),
+    CronJob     = require('cron').CronJob;
 
 // Connect to MongoDB via Mongoose
 mongoose.connect('mongodb://localhost:27017/recur');
-mongoose.connection.once('open', function(){console.log('mdb listening on 27017')});
+mongoose.connection.once('open', function(){console.log('mdb listening on 27017');});
 
 // Passport session setup
-passport.serializeUser(function(user, done) {
-  done(null, user);
-});
-passport.deserializeUser(function(obj, done) {
-  done(null, obj);
-});
+passport.serializeUser(function(user, done) { done(null, user); });
+passport.deserializeUser(function(obj, done) { done(null, obj); });
 
 // Passport Strategies
 passport.use('google', new GoogleStrategy({
@@ -38,41 +35,44 @@ passport.use('google', new GoogleStrategy({
   callbackURL: 'http://dev.recur.com:8080/auth/google/callback',
   passReqToCallback: true
   }, function(request, accessToken, refreshToken, profile, done) {
-//     console.log('GOOOOOOOOOOOOOOGLE ', profile);
     userCtrl.findOrCreate(profile, done).then(function(user){
       return done(null, user);
-    })
+    });
   }
 ));
 passport.use('facebook', new FacebookStrategy({
-  clientID: config.facebook.key
-, clientSecret: config.facebook.secret
-, callbackURL: 'http://dev.recur.com:8080/auth/facebook/callback'
-, profileFields : ['id', 'displayName', 'emails']
+  clientID: config.facebook.key,
+  clientSecret: config.facebook.secret,
+  callbackURL: 'http://dev.recur.com:8080/auth/facebook/callback',
+  profileFields : ['id', 'displayName', 'emails']
   }, function(token, secret, profile, done){
-//     console.log('FACEBOOOOOOOOOOOOK ', profile);
     userCtrl.findOrCreate(profile, done).then(function(user){
       return done(null, user);
-    })
+    });
   }
 ));
-passport.use('twitter', new TwitterStrategy({
-  consumerKey: config.twitter.key
-, consumerSecret: config.twitter.secret
-, callbackURL: 'http://dev.recur.com:8080/auth/twitter/callback'
-, profileFields : ['id', 'displayName', 'emails']
-  }, function(token, secret, profile, done) {
-//     console.log('TWITTTTTTTTTTER ', profile);
-    userCtrl.findOrCreate(profile, done).then(function(user){
-      return done(null, user);
-    })
-  }
-));
+// passport.use('twitter', new TwitterStrategy({
+//   consumerKey: config.twitter.key
+// , consumerSecret: config.twitter.secret
+// , callbackURL: 'http://dev.recur.com:8080/auth/twitter/callback'
+// , profileFields : ['id', 'displayName', 'emails']
+//   }, function(token, secret, profile, done) {
+// //     console.log('TWITTTTTTTTTTER ', profile);
+//     userCtrl.findOrCreate(profile, done).then(function(user){
+//       return done(null, user);
+//     })
+//   }
+// ));
 
 
-// configure Express
+function ensureAuthenticated(req, res, next) {
+  if (req.isAuthenticated()) { return next(); }
+  res.status(403).send('not authenticated');
+}
+
+// Express config & middleware
 app.use('/', express.static(__dirname + '/public'));
-app.use('/', bodyParser);
+app.use('/', bodyParser.json());
 app.use('/', cors());
 app.use(session({
   secret: 'some-random-string',
@@ -95,56 +95,41 @@ app.get('/auth/facebook/callback', passport.authenticate('facebook', {
   successRedirect: '/',
   failureRedirect: '/'
 }));
-app.get('/auth/twitter', passport.authenticate('twitter', {scope: [ 'email' ] }));
-app.get('/auth/twitter/callback', passport.authenticate('twitter', {
-  successRedirect: '/complete',
-  failureRedirect: '/'
-}));
+// app.get('/auth/twitter', passport.authenticate('twitter', {scope: [ 'email' ] }));
+// app.get('/auth/twitter/callback', passport.authenticate('twitter', {
+//   successRedirect: '/complete',
+//   failureRedirect: '/'
+// }));
 app.get('/auth/logout', function(req, res){
   req.logout();
   res.redirect('/');
 });
 
-// FRONTEND ENDPOINTS
+// API ENDPOINTS
 // app.post('/api/user', userCtrl.create)
-app.get('/api/user/', userCtrl.retrieve)
-app.put('/api/user/:user_id', userCtrl.update)
-app.delete('/api/user/:user_id', userCtrl.remove)
+app.get(    '/api/user/',         userCtrl.retrieve);
+app.put(    '/api/user/:user_id', userCtrl.update);
+app.delete( '/api/user/:user_id', userCtrl.remove);
 
-app.post('/api/sub', subCtrl.create)
-app.get('/api/sub', subCtrl.retrieve)
-app.put('/api/sub/:sub_id', subCtrl.update)
-app.delete('/api/sub/:sub_id', subCtrl.remove)
-
-
-app.listen(port, function(){console.log('srv listening on', port)});
+app.post(   '/api/sub',           subCtrl.create);
+app.get(    '/api/sub',           subCtrl.retrieve);
+app.put(    '/api/sub/:sub_id',   subCtrl.update);
+app.delete( '/api/sub/:sub_id',   subCtrl.remove);
 
 
 
-function ensureAuthenticated(req, res, next) {
-  if (req.isAuthenticated()) { return next(); }
-  res.status(403).send('not authenticated');
-}
+app.listen(port, function(){console.log('srv listening on', port);});
+
 
 // ---------- NODEMAILER ----------
 var transporter = nodemailer.createTransport({
     service: 'Gmail',
     auth: {
-      user: config.nodemailerGmail.username
-    , pass: config.nodemailerGmail.password
+      user: config.nodemailerGmail.username,
+      pass: config.nodemailerGmail.password
     }
 });
 
-// setup e-mail data with unicode symbols
-// var mailOptions = {
-//     from: 'Recurring Subscription Reminder <recurrecurrecur+noreply@gmail.com>' // sender address
-//   , replyTo: 'noreply@dev.recur.com'
-//   , to: 'mikkeld@gmail.com' // list of receivers
-//   , subject: 'Are you still using these services?' // Subject line
-//   , text: 'Are you sure???' // plaintext body
-// //   , html: '<b>Hello world ✔</b>' // html body
-// };
-// send mail with defined transport object
 var testEmail = function(mailOptions){
   transporter.sendMail(mailOptions, function(error, info){
       if(error){
@@ -155,49 +140,50 @@ var testEmail = function(mailOptions){
   });
 };
 
-// ---------- CRON JOB ----------
+// ---------- DAILY EMAIL CRON JOB ----------
 var job = new CronJob({
-  cronTime: '00 37 07 * * 1-7'
-, onTick: function(){
+  cronTime: '00 37 07 * * 1-7',
+  onTick: function(){
     /*
      * Runs every weekday (Monday through Friday)
      * at 11:30:00 AM. It does not run on Saturday
      * or Sunday.
      */
     userCtrl.mail().then(function(res){
-      var user = res
+      var user = res;
       var body = '';
       for (var i = 0; i < user.subs.length; i++) {
         var sub = user.subs[i];
         body += sub.name + ' @ $' + sub.cost + ' per month ($' + sub.cost*12 + 'per year),';
-      };
+      }
       var mailOptions = {
-        from: 'Recurring Subscription Reminder <recurrecurrecur+noreply@gmail.com>' // sender address
-      , replyTo: 'noreply@dev.recur.com'
-      , to: user.email // list of receivers
-      , subject: 'Are you still using these services?' // Subject line
-      , text: 'Are you sure you still need these??? --- ' + body // plaintext body
+        from: 'Recurring Subscription Reminder <recurrecurrecur+noreply@gmail.com>', // sender address
+        replyTo: 'noreply@dev.recur.com',
+        to: user.email, // list of receivers
+        subject: 'Are you still using these services?', // Subject line
+        text: 'Are you sure you still need these??? --- ' + body // plaintext body
       };
       testEmail(mailOptions);
     });
-  }
-, onComplete: function(){
+  },
+  onComplete: function(){
     console.log('cron job complete at ', Date.now);
-  }
-, start: false
-, timeZone: 'America/Denver'
+  },
+  start: false,
+  timeZone: 'America/Denver'
 });
 job.start();
 
-
+})();
 
 // UNDO/CANCEL INSTEAD OF SAVE
-// Twitter login (email complete)
-   // MAYBE JUST EMAIL BOX ABOVE SUBS LIST???
 // cron job email
 // cron job update sub ranking
 // get top 30 most popular services, with suggested cost (pagination i guess)
 // add custom
+// Twitter login (email complete)
+   // MAYBE JUST EMAIL BOX ABOVE SUBS LIST???
+
 // openshift ???
 // modal on the side
 // video background

@@ -12,10 +12,10 @@
 </head>
 
 <body ng-controller="mainBodyCtrl" ng-class="{vignette: getLoc()==='/'}">
-  
+
   <div id="nav" ng-class="{'nav-change': getLoc()!='/'}">
     <div id="logo">
-      <a ng-href="/#/" ng-class="{white-text: getLoc()==='/'}" ng-style="whiteText" ng-click="whiteText={'color': '#ffffff'}">RECUR</a>
+      <a ng-href="/#/" ng-style="whiteText">RECUR</a>
       <span id="logo2" ng-show="getLoc()==='/'">RECUR</span>
       <span id="logo3" ng-show="getLoc()==='/'">RECUR</span>
     </div>
@@ -30,7 +30,7 @@
     </div>
   </div>
 
-  <div ng-show="authModalOpen" ng-click="authModalOpen=false" class="modal-shade"></div>
+  <div class="modal-shade" ng-show="authModalOpen" ng-click="authModalOpen=false"></div>
   <div id="auth-modal" class="modal animated" ng-show="authModalOpen" ng-class="{slideInRight: authModalOpen, slideOutRight: !authModalOpen}">
     <i ng-click="authModalOpen=false" class="fa fa-times"></i>
     <div id="auth-icons">
